@@ -8,7 +8,7 @@ uniform sampler2D tex;
 void main() {
     vec4 pixColor = texture(tex, v_texcoord);
 
-    float factor = 0.5; // lower = darker, higher = brighter
+    float factor = 0.8; // lower = darker, higher = brighter
 
     fragColor = vec4(pixColor.rgb * factor, pixColor.a);
 }
