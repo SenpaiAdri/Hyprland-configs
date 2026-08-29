@@ -97,14 +97,30 @@ EOF
 
 set_wallpaper "$WALL"
 
-if command -v matugen >/dev/null 2>&1; then
+# --- Dynamic theming (theme-generator + matugen compat) ---
+# Ensure local bin in PATH for our matugen wrapper
+export PATH="$HOME/.local/bin:$PATH"
+THEME_GEN="$HOME/.config/hypr/scripts/theme-generator.py"
+
+# Prefer our theme-generator directly (fast, no matugen needed)
+if [[ -x "$THEME_GEN" ]]; then
+  python3 "$THEME_GEN" "$WALL" 2>/dev/null || true
+elif command -v matugen >/dev/null 2>&1; then
   matugen image "$WALL" --mode dark --type scheme-tonal-spot --contrast 0.15 2>/dev/null || true
 fi
 
+# Reload dynamic targets
 pkill -SIGUSR2 waybar 2>/dev/null || (killall -SIGUSR2 waybar 2>/dev/null || true)
+# waybar may need restart if SIGUSR2 not enough (CSS reload)
+# (keep SIGUSR2 first for smooth, fallback to restart after hyprctl reload)
 swaync-client --reload-css 2>/dev/null || swaync-client -rs 2>/dev/null || true
+# kitty live reload (SIGUSR1 reloads colors.conf if `include` is used)
 pkill -SIGUSR1 kitty 2>/dev/null || true
+# hyprland/hyprlock will pick new colors via `source` on reload
 hyprctl reload 2>/dev/null || true
+# force swaync style reload via css timestamp touch
+touch "$HOME/.config/swaync/style.css" 2>/dev/null || true
+touch "$HOME/.config/waybar/style.css" 2>/dev/null || true
 
 if command -v notify-send >/dev/null 2>&1; then
   notify-send -i preferences-desktop-wallpaper "Wallpaper" "$(basename "$WALL")" 2>/dev/null || true
