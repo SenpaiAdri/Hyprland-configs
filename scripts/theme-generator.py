@@ -59,21 +59,6 @@ PRETUNED = {
         "outline": "#938caa",
         "error": "#ffb4ab",
     },
-    "dark-minimalist.jpg": {
-        # True grayscale — monochrome charcoal (blue accent removed per request)
-        "primary": "#d0d0d0",
-        "primary_container": "#3a3a3a",
-        "secondary": "#b8b8b8",
-        "tertiary": "#a8a8a8",
-        "surface": "#161616",
-        "surface_container": "#1e1e1e",
-        "background": "#0f0f0f",
-        "on_surface": "#ececec",
-        "surface_variant": "#2c2c2c",
-        "outline": "#6e6e6e",
-        "error": "#9e9e9e",
-        "on_primary": "#0f0f0f",
-    },
     "dark_minimalist.jpg": {
         # True grayscale — monochrome charcoal (blue accent removed per request)
         "primary": "#d0d0d0",
@@ -86,7 +71,7 @@ PRETUNED = {
         "on_surface": "#ececec",
         "surface_variant": "#2c2c2c",
         "outline": "#6e6e6e",
-        "error": "#9e9e9e",
+        "error": "#FF9494",
         "on_primary": "#0f0f0f",
     },
 }
