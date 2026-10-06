@@ -3,14 +3,26 @@
 # Usage: wallpaper.sh <path> | wallpaper.sh --random | wallpaper.sh --init
 set -euo pipefail
 
+WALL_DIRS=("$HOME/Pictures/wallpapers" "$HOME/Pictures/Wallpapers")
+# Back-compat: WALL_DIR = first existing dir (lowercase preferred), else lowercase default
 WALL_DIR="$HOME/Pictures/wallpapers"
+for _d in "${WALL_DIRS[@]}"; do
+  if [[ -d "$_d" ]]; then
+    WALL_DIR="$_d"
+    break
+  fi
+done
 CACHE_CURRENT="$HOME/.cache/current_wallpaper"
 
 get_random_wall() {
   local walls=()
-  while IFS= read -r -d '' f; do walls+=("$f"); done < <(find "$WALL_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) -print0 2>/dev/null)
+  local _d
+  for _d in "${WALL_DIRS[@]}"; do
+    [[ -d "$_d" ]] || continue
+    while IFS= read -r -d '' f; do walls+=("$f"); done < <(find "$_d" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) -print0 2>/dev/null)
+  done
   if [[ ${#walls[@]} -eq 0 ]]; then
-    echo "No wallpapers in $WALL_DIR" >&2
+    echo "No wallpapers in ${WALL_DIRS[*]}" >&2
     exit 1
   fi
   printf '%s\n' "${walls[RANDOM % ${#walls[@]}]}"
@@ -113,7 +125,11 @@ fi
 pkill -SIGUSR2 waybar 2>/dev/null || (killall -SIGUSR2 waybar 2>/dev/null || true)
 # waybar may need restart if SIGUSR2 not enough (CSS reload)
 # (keep SIGUSR2 first for smooth, fallback to restart after hyprctl reload)
-swaync-client --reload-css 2>/dev/null || swaync-client -rs 2>/dev/null || true
+# swaync retired — quickshell owns notifications now; only poke it if actually running
+# (bare swaync-client blocks forever waiting for org.erikreider.swaync.cc when absent)
+if pgrep -x swaync >/dev/null 2>&1; then
+  (timeout 3 swaync-client --reload-css 2>/dev/null || timeout 3 swaync-client -rs 2>/dev/null || true)
+fi
 # kitty live reload (SIGUSR1 reloads colors.conf if `include` is used)
 pkill -SIGUSR1 kitty 2>/dev/null || true
 # hyprland/hyprlock will pick new colors via `source` on reload

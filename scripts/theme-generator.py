@@ -59,7 +59,7 @@ PRETUNED = {
         "outline": "#938caa",
         "error": "#ffb4ab",
     },
-    "dark_minimalist.jpg": {
+    "moon.jpg": {
         # True grayscale — monochrome charcoal (blue accent removed per request)
         "primary": "#d0d0d0",
         "primary_container": "#3a3a3a",

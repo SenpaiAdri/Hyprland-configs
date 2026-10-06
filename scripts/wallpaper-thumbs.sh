@@ -7,7 +7,13 @@ exec python3 - <<'EOF'
 import os
 from PIL import Image
 
-wall_dir = os.path.expanduser("~/Pictures/wallpapers")
+wall_dirs = [
+    os.path.expanduser("~/Pictures/wallpapers"),
+    os.path.expanduser("~/Pictures/Wallpapers"),
+]
+# dedupe (same dir different case on case-insensitive fs, or symlink)
+seen_dirs = set()
+wall_dirs = [d for d in wall_dirs if not (d in seen_dirs or seen_dirs.add(d))]
 thumb_dir = os.path.expanduser("~/.cache/wallpaper-thumbs")
 os.makedirs(thumb_dir, exist_ok=True)
 
@@ -31,16 +37,34 @@ except OSError:
 print(f"CUR:{cur}")
 
 exts = {".jpg", ".jpeg", ".png", ".webp"}
-try:
-    names = sorted(os.listdir(wall_dir))
-except OSError:
-    names = []
-
-for name in names:
-    full = os.path.join(wall_dir, name)
-    if not os.path.isfile(full) or os.path.splitext(name)[1].lower() not in exts:
+# collect from both dirs (lowercase legacy + capital), dedupe by real path, sorted by name
+entries = {}  # realpath -> (name, full)
+for wall_dir in wall_dirs:
+    try:
+        names = sorted(os.listdir(wall_dir))
+    except OSError:
         continue
-    thumb = os.path.join(thumb_dir, os.path.splitext(name)[0] + ".png")
+    for name in names:
+        full = os.path.join(wall_dir, name)
+        if not os.path.isfile(full) or os.path.splitext(name)[1].lower() not in exts:
+            continue
+        try:
+            key = os.path.realpath(full)
+        except OSError:
+            continue
+        # keep first; if basename collision across dirs, keep both by keying on realpath
+        entries.setdefault(key, (name, full))
+
+used_thumbs = set()
+for name, full in sorted(entries.values(), key=lambda t: t[0].lower()):
+    stem = os.path.splitext(name)[0]
+    thumb = os.path.join(thumb_dir, stem + ".png")
+    # disambiguate same basename coming from both dirs (e.g. mountain_art.jpg x2)
+    n = 2
+    while thumb in used_thumbs:
+        thumb = os.path.join(thumb_dir, f"{stem}_{n}.png")
+        n += 1
+    used_thumbs.add(thumb)
     if not thumb_ok(thumb, full):
         try:
             im = Image.open(full).convert("RGB")
