@@ -84,6 +84,7 @@ set_wallpaper() {
     hyprctl hyprpaper wallpaper ",$img" 2>/dev/null || true
     # persist for next boot
     cat > "$HOME/.config/hypr/hyprpaper.conf" <<EOF
+splash = false
 preload = $img
 wallpaper {
     monitor = eDP-1

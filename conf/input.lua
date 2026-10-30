@@ -1,4 +1,7 @@
 hl.config({
+    cursor = {
+        warp_on_monitor_change = 1,
+    },
     input = {
         kb_layout = "us",
         follow_mouse = 1,
