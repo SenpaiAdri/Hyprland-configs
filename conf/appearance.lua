@@ -1,0 +1,35 @@
+hl.config({
+    general = {
+        gaps_in = 3,
+        gaps_out = 0,
+        border_size = 1,
+        resize_on_border = true,
+        allow_tearing = false,
+        layout = "dwindle",
+    },
+    decoration = {
+        rounding = 10,
+        active_opacity = 1,
+        inactive_opacity = 0.85,
+        shadow = {
+            enabled = true,
+            range = 10,
+            render_power = 3,
+            color = "rgba(1a1a1aee)",
+        },
+        blur = {
+            enabled = true,
+            size = 6,
+            passes = 3,
+            vibrancy = 0.28,
+            new_optimizations = true,
+        },
+    },
+    misc = {
+        force_default_wallpaper = 0,
+        disable_hyprland_logo = true,
+        disable_splash_rendering = true,
+        mouse_move_enables_dpms = true,
+        key_press_enables_dpms = true,
+    },
+})

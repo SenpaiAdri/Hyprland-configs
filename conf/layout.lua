@@ -1,0 +1,9 @@
+hl.config({
+    dwindle = {
+        preserve_split = true,
+        smart_split = false,
+    },
+    master = {
+        new_status = "master",
+    },
+})

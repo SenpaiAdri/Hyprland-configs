@@ -1,0 +1,16 @@
+local programs = require("conf.programs")
+
+-- This event runs once at login, not on configuration reload.
+hl.on("hyprland.start", function()
+    hl.exec_cmd("waybar")
+    hl.exec_cmd("quickshell")
+    hl.exec_cmd("brave", { workspace = "1 silent" })
+    hl.exec_cmd("cursor", { workspace = "2 silent" })
+    hl.exec_cmd(programs.terminal, { workspace = "3 silent" })
+    hl.exec_cmd("hyprpaper")
+    hl.exec_cmd("hypridle")
+    hl.exec_cmd("hyprsunset --temperature 4000")
+    hl.exec_cmd("wl-paste --type text --watch cliphist store")
+    hl.exec_cmd("wl-paste --type image --watch cliphist store")
+    hl.exec_cmd(programs.wallpaperScript .. " --init")
+end)
